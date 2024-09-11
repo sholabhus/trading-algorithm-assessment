@@ -5,6 +5,7 @@ import codingblackfemales.action.CancelChildOrder;
 import codingblackfemales.action.CreateChildOrder;
 import codingblackfemales.action.NoAction;
 import codingblackfemales.algo.AlgoLogic;
+import codingblackfemales.marketdata.gen.RandomMarketDataGenerator;
 import codingblackfemales.orderbook.channel.MarketDataChannel;
 import codingblackfemales.service.MarketDataService;
 import codingblackfemales.service.OrderService;
@@ -35,38 +36,46 @@ public class MyAlgoLogic implements AlgoLogic {
 
 
         final BidLevel bidLevel = state.getBidAt(0);
-        final long price = bidLevel.price;
-        final long quantity = bidLevel.quantity;
+        final long bidPrice = bidLevel.price;
+        final long bidQuantity = bidLevel.quantity;
 
         final AskLevel askLevel = state.getAskAt(0);
-        final long askprice = askLevel.price;
-        final long askquantity = askLevel.quantity;
-//        var totalOrderCount = state.getChildOrders().size();
-//
-//        if (totalOrderCount > 1) {
-//            return NoAction.NoAction;
-//        }
+        final long askPrice = askLevel.price;
+        final long askQuantity = askLevel.quantity;
 
-//        //if (state.getActiveChildOrders().) {
-//            // Check if there are existing orders to cancel
-//            ChildOrder orderToCancel = state.getChildOrders().get(0); // Cancel the first order
-//            long orderId = orderToCancel.getOrderId();// get the first orderID
-//            logger.info("Cancel Order with ID #" + orderId  + " . Current state; Cancelled");
-//            return new CancelChildOrder(orderToCancel);
-//
-//     }
+        //capture current size of order before creating new one
+        // int currentOrderSize = state.getChildOrders().size();// capture current size of order before creating new one
+        // logger.info("[MYALGO] Current order size is :" + currentOrderSize );
 
-         if(state.getChildOrders().size() < 5) {
-          // If less than 3 child orders, create a new order
-            logger.info("[PASSIVEALGO] Have: " + state.getChildOrders().size() + " orders. ADD New Order " + quantity + " @ " + price);
-           int initialOrderSize =state.getChildOrders().size();// capture current size of order before creating new one
-            return new CreateChildOrder(Side.BUY, quantity, price); // Create a new child order
-        }
+        // seperate childorder into BUY AND SELL
+        long buyOrdersCount = state.getChildOrders().stream().filter(ChildOrder -> ChildOrder.getSide() == Side.BUY).count();
+        long sellOrdersCount = state.getChildOrders().stream().filter(ChildOrder -> ChildOrder.getSide() == Side.SELL).count();
+
+
+        //check if there are few than 5 child orders
+       // if (state.getChildOrders().size() < 5) {
+            if (buyOrdersCount < 4) { // create new Buy order if fewer than 5 child order exist
+                // If less than 4 BUY orders, create a new BUY order
+                logger.info("[PASSIVEALGO] Have: " + buyOrdersCount + " orders. ADD New BUY ORDER " + bidQuantity + " @ " + bidPrice);
+                //  int initialOrderSize = state.getChildOrders().size();// capture current size of order before creating new one
+                return new CreateChildOrder(Side.BUY, bidQuantity, bidPrice); // Create a new BUY order
+            }
+ //If no actions are taken, return NoAction
+           //   return NoAction.NoAction;
+           // }
+
+            if (sellOrdersCount < 3) { //create new sell order if fewer than 5 child order exist
+              logger.info("[PASSIVEALGO] Ha: " + sellOrdersCount + " orders. ADD New ASK ORDER " + askQuantity + " @ " + askPrice);
+            //int initialOrderSize = state.getChildOrders().size();// capture current size of order before creating new one
+              return new CreateChildOrder(Side.SELL, askQuantity, askPrice); // Create a new child order
+               }
 
 // If no actions are taken, return NoAction
-        return NoAction.NoAction;
+            return NoAction.NoAction;
+        }
     }
-}
+
+
 
 
 
