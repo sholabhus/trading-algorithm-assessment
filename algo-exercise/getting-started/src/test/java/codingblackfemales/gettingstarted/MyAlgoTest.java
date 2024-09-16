@@ -1,9 +1,11 @@
 package codingblackfemales.gettingstarted;
 
 import codingblackfemales.algo.AlgoLogic;
+import codingblackfemales.sotw.SimpleAlgoState;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 
 /**
@@ -30,17 +32,27 @@ public class MyAlgoTest extends AbstractAlgoTest {
 
         //create a sample market data tick....
         send(createTick());
+        send(createTick2());
+        //Retrieve the state from the container
+        SimpleAlgoState state = container.getState();
+
+        //Get the number of buy orders
+        long buyOrderCount = state.getBidLevels();
 
         //simple assert to check we had 3 orders created
-        assertEquals(container.getState().getChildOrders().size(), 5
-        );
-        //child order has decreased by 1 -Order cancellation failed,size did not decrease",
-       //assertEquals(container.getState().getChildOrders().size(),  1) ;
-    }
 
+        //assertEquals("Should create 3 orders",3, state.getBidLevels());
+        // assertEquals("Should create 2 BUY orders", 2,buyOrderCount);
 
-
+        assertEquals("Should cancel 1 order", 1, state.getCancelledChildOrders().size());
+        assertFalse("The cancelled Buy order should no longer exists in the order book",state.getActiveChildOrders().contains(buyOrderCount));
 
 
     }
+}
+
+
+
+
+
 
