@@ -41,7 +41,7 @@ public class ChildOrder {
     }
 
     public long getFilledQuantity() {
-        return fills.stream().map( cf -> cf.getQuantity()).collect(Collectors.summingLong(Long::longValue));
+        return fills.stream().map(cf -> cf.getQuantity()).collect(Collectors.summingLong(Long::longValue));
     }
 
     public int getState() {
@@ -56,5 +56,15 @@ public class ChildOrder {
         this.fills.add(new ChildFill(filledQuantity, filledPrice));
     }
 
-      }
+    @Override
+    public String toString() {
+        return "ChildOrder{" +
+                "orderId='" + orderId + '\'' +
+                ", side='" + side + '\'' +
+                ", quantity=" + quantity +
+                ", price=" + price +
+                '}';
+
+    }
+}
 
