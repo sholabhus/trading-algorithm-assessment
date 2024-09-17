@@ -1,11 +1,22 @@
 package codingblackfemales.gettingstarted;
 
+import codingblackfemales.action.CancelChildOrder;
 import codingblackfemales.algo.AlgoLogic;
+import codingblackfemales.orderbook.OrderBook;
+import codingblackfemales.orderbook.order.Order;
+import codingblackfemales.sotw.ChildOrder;
+import codingblackfemales.sotw.OrderState;
 import codingblackfemales.sotw.SimpleAlgoState;
+import codingblackfemales.sotw.marketdata.BidLevel;
+import messages.order.Side;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.junit.Assert.*;
 
 
 /**
@@ -33,26 +44,27 @@ public class MyAlgoTest extends AbstractAlgoTest {
         //create a sample market data tick....
         send(createTick());
         send(createTick2());
+
         //Retrieve the state from the container
         SimpleAlgoState state = container.getState();
 
         //Get the number of buy orders
-        long buyOrderCount = state.getBidLevels();
+      long buyOrderCount = state.getBidLevels();
 
         //simple assert to check we had 3 orders created
 
         //assertEquals("Should create 3 orders",3, state.getBidLevels());
-        // assertEquals("Should create 2 BUY orders", 2,buyOrderCount);
+       // assertEquals("Should create 2 BUY orders", 2,buyOrderCount);
 
         assertEquals("Should cancel 1 order", 1, state.getCancelledChildOrders().size());
         assertFalse("The cancelled Buy order should no longer exists in the order book",state.getActiveChildOrders().contains(buyOrderCount));
 
 
     }
-}
 
 
 
 
 
+    }
 
