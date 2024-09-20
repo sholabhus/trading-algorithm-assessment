@@ -1,22 +1,15 @@
 package codingblackfemales.gettingstarted;
 
-import codingblackfemales.action.CancelChildOrder;
+import codingblackfemales.action.Action;
 import codingblackfemales.algo.AlgoLogic;
-import codingblackfemales.orderbook.OrderBook;
-import codingblackfemales.orderbook.order.Order;
-import codingblackfemales.sotw.ChildOrder;
-import codingblackfemales.sotw.OrderState;
 import codingblackfemales.sotw.SimpleAlgoState;
-import codingblackfemales.sotw.marketdata.BidLevel;
 import messages.order.Side;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 
 /**
@@ -30,7 +23,7 @@ import static org.junit.Assert.*;
  *
  */
 public class MyAlgoTest extends AbstractAlgoTest {
-
+    private static final Logger logger = LoggerFactory.getLogger(MyAlgoTest.class.getName());
     @Override
     public AlgoLogic createAlgoLogic() {
         //this adds your algo logic to the container classes
@@ -44,26 +37,45 @@ public class MyAlgoTest extends AbstractAlgoTest {
         //create a sample market data tick....
         send(createTick());
         send(createTick2());
+        send(createTick3());
 
         //Retrieve the state from the container
         SimpleAlgoState state = container.getState();
+        // Run the algorithm logic
+       Action action = createAlgoLogic().evaluate(state);
+        // count initial active buy orders
+        long initialBuyOrderCount = state.getActiveChildOrders().stream()
+                .filter(order -> order.getSide() == Side.BUY)
+                .count();
+        // Check for canceled buy orders
+        long cancelBuyOrderCount = state.getCancelledChildOrders().stream()
+                .filter(order -> order.getSide() == Side.BUY )
+                .count();
+        //Check  initial active Sell Orders
+        long initialSellOrderCount = state.getActiveChildOrders().stream()
+                .filter(order -> order.getSide() == Side.SELL)
+                .count();
+        // Check for canceled Sell orders
+        long cancelSellOrderCount = state.getCancelledChildOrders().stream()
+                .filter(order -> order.getSide() == Side.SELL )
+                .count();
 
-        //Get the number of buy orders
-      long buyOrderCount = state.getBidLevels();
 
-        //simple assert to check we had 3 orders created
+        //Assertions
+       logger.info("Verifying assertions...");
+        // verify 3 buy order has been created
+        assertEquals("Should create 3 Buy orders",3, state.getBidLevels());
+     // check that the canceled buy order match the expected number
+       assertTrue("Should cancel at least 1 BUY order", cancelBuyOrderCount >=1);
 
-        //assertEquals("Should create 3 orders",3, state.getBidLevels());
-       // assertEquals("Should create 2 BUY orders", 2,buyOrderCount);
 
-        assertEquals("Should cancel 1 order", 1, state.getCancelledChildOrders().size());
-        assertFalse("The cancelled Buy order should no longer exists in the order book",state.getActiveChildOrders().contains(buyOrderCount));
-
+        // verify 3 Ask order has been created
+        assertEquals("Should create 3 Ask orders", 3, state.getAskLevels());
+        // check that the canceled Sell order match the expected number
+        assertTrue("Should cancel at least 1 SELL order", cancelSellOrderCount >=1);
+        logger.info("Test completed successfully");
 
     }
-
-
-
 
 
     }

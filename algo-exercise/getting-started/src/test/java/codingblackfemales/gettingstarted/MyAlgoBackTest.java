@@ -33,6 +33,8 @@ public class MyAlgoBackTest extends AbstractAlgoBackTest {
         //when: market data moves towards us
         send(createTick2());
 
+        send(createTick3());
+
         //then: get the state
         var state = container.getState();
 
