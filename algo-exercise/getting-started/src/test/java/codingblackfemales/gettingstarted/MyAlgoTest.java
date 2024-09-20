@@ -30,7 +30,6 @@ public class MyAlgoTest extends AbstractAlgoTest {
         return new MyAlgoLogic();
     }
 
-
     @Test
     public void testDispatchThroughSequencer() throws Exception {
 
@@ -77,6 +76,5 @@ public class MyAlgoTest extends AbstractAlgoTest {
 
     }
 
-
-    }
+}
 

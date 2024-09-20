@@ -24,7 +24,6 @@ public class MyAlgoLogic implements AlgoLogic {
     private static final String ANSI_BLUE = "\u001B[34m";
 
 
-    //private static final long SELL_THRESHOLD = 500; // SELL when price goes above this
 
     @Override
     public Action evaluate(SimpleAlgoState state) {
@@ -94,8 +93,6 @@ public class MyAlgoLogic implements AlgoLogic {
         //If no actions are taken, return NoAction
         return NoAction.NoAction;
     }
-
-
 
 }
 
