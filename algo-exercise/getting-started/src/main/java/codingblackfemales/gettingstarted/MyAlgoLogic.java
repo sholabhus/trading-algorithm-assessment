@@ -24,13 +24,12 @@ public class MyAlgoLogic implements AlgoLogic {
     private static final String ANSI_BLUE = "\u001B[34m";
 
 
-
     @Override
     public Action evaluate(SimpleAlgoState state) {
 
         var orderBookAsString = Util.orderBookToString(state);
 
-        logger.info(ANSI_BLUE + "[MYALGO] The state of the order book is:\n"  + orderBookAsString + ANSI_RESET);
+        logger.info(ANSI_BLUE + "[MYALGO] The state of the order book is:\n" + orderBookAsString + ANSI_RESET);
         logger.info("########### CURRENT ORDERS: " + state.getActiveChildOrders().toString());
         var totalOrderCount = state.getChildOrders().size();
         //make sure we have an exit condition...
@@ -41,13 +40,13 @@ public class MyAlgoLogic implements AlgoLogic {
         final BidLevel bidLevel = state.getBidAt(0);
         final long bidPrice = bidLevel.price; // VALUES ARE THE SAME
         final long bidQuantity = bidLevel.quantity;
-       // final long bestBidPrice = state.getBidAt(0).price; // get the current Bidprice // VALUES ARE THE SAME(will remove)
+        // final long bestBidPrice = state.getBidAt(0).price; // get the current Bidprice // VALUES ARE THE SAME(will remove)
 
         final AskLevel askLevel = state.getAskAt(0);
         final long askPrice = askLevel.price;
         final long askQuantity = askLevel.quantity;
-       //final long bestAskPrice = state.getAskAt(0).price; will remove
-        final long OrderAskPrice =75;
+        //final long bestAskPrice = state.getAskAt(0).price; will remove
+        final long OrderAskPrice = 75;
 
         // logger.info("[MYALGO] Current order size is :" + currentOrderSize );
 
@@ -55,27 +54,28 @@ public class MyAlgoLogic implements AlgoLogic {
         long buyOrdersCount = state.getChildOrders().stream().filter(ChildOrder -> ChildOrder.getSide() == Side.BUY).count();
         long sellOrdersCount = state.getChildOrders().stream().filter(ChildOrder -> ChildOrder.getSide() == Side.SELL).count();
 
-        // create new BUY order
+        // create new BUY order if fewer tha 5 BUY order exist
         if (buyOrdersCount < 5) {
             logger.info(String.format(ANSI_GREEN + "[MYALGO] Have: " + buyOrdersCount + " orders. ADD New BUY ORDER " + bidQuantity + " @ " + bidPrice + ANSI_RESET));
             //  int initialOrderSize = state.getChildOrders().size();// capture current size of order before creating new one
             logger.info(state.getActiveChildOrders().toString());
+            logger.info("Count ORDER -BUY - Number : "  +  state.getChildOrders().size());
             return new CreateChildOrder(Side.BUY, bidQuantity, bidPrice); // Create a new BUY order
         }
 
-        // create new SELL order
-        if (sellOrdersCount<5){//create new sell order if fewer than 5 child order exist
+        // create new SELL order if fewer tha  5 SELL orders exist
+        if (sellOrdersCount < 5) {//create new sell order if fewer than 5 child order exist
             logger.info(String.format(ANSI_GREEN + "[MYALGO] Have: " + sellOrdersCount + " orders. ADD New ASK ORDER " + askQuantity + " @ " + askPrice + ANSI_RESET));
             int initialOrderSize = state.getChildOrders().size();// capture current size of order before creating new one
+            logger.info("Count ORDER -SELL - Number : "  +  state.getChildOrders().size());
             return new CreateChildOrder(Side.SELL, askQuantity, askPrice); // Create a new child order
         }
 
-        // Cancel the  First  BUY order with a price less than the BestBid or not matching the Bestbid.
+        //Cancel the First BUY order with a price less than the BestBid or not matching the Bestbid.
         for (ChildOrder order : state.getActiveChildOrders()) {
             logger.info("Order ID#####: " + order.getOrderId() + ", Side: " + order.getSide() + ", Price: " + order.getPrice());
-
             if (order.getSide() == Side.BUY && ((order.getPrice() != bidPrice) || (order.getPrice() < bidPrice))) {
-                logger.info(String.format(ANSI_GREEN  +"[MYALGO] Cancel BUY order #%d with price %d and quantity %d. The current best price is %d." + ANSI_RESET, order.getOrderId(), order.getPrice(), order.getQuantity(), bidPrice));
+                logger.info(String.format(ANSI_GREEN + "[MYALGO] Cancel BUY order #%d with price %d and quantity %d. The current best price is %d." + ANSI_RESET, order.getOrderId(), order.getPrice(), order.getQuantity(), bidPrice));
                 logger.info(state.getActiveChildOrders().toString());
                 return new CancelChildOrder(order);
 
@@ -92,11 +92,10 @@ public class MyAlgoLogic implements AlgoLogic {
         }
         //If no actions are taken, return NoAction
         return NoAction.NoAction;
+
     }
 
 }
-
-
 
 
 
