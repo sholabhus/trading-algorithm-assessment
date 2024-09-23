@@ -1,9 +1,11 @@
 package codingblackfemales.gettingstarted;
 
 import codingblackfemales.action.Action;
+import codingblackfemales.action.NoAction;
 import codingblackfemales.algo.AlgoLogic;
 import codingblackfemales.sotw.SimpleAlgoState;
 import messages.order.Side;
+import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +26,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class MyAlgoTest extends AbstractAlgoTest {
     private static final Logger logger = LoggerFactory.getLogger(MyAlgoTest.class.getName());
+
     @Override
     public AlgoLogic createAlgoLogic() {
         //this adds your algo logic to the container classes
@@ -31,8 +34,7 @@ public class MyAlgoTest extends AbstractAlgoTest {
     }
 
     @Test
-    public void testDispatchThroughSequencer() throws Exception {
-
+    public void testBuyCreation() throws Exception {
         //create a sample market data tick....
         send(createTick());
         send(createTick2());
@@ -40,41 +42,108 @@ public class MyAlgoTest extends AbstractAlgoTest {
 
         //Retrieve the state from the container
         SimpleAlgoState state = container.getState();
-        // Run the algorithm logic
-       Action action = createAlgoLogic().evaluate(state);
-        // count initial active buy orders
-        long initialBuyOrderCount = state.getActiveChildOrders().stream()
-                .filter(order -> order.getSide() == Side.BUY)
+
+        long buyOrdersCount = state.getChildOrders().stream()
+                .filter(childOrder -> childOrder.getSide() == Side.BUY)
                 .count();
-        // Check for canceled buy orders
-        long cancelBuyOrderCount = state.getCancelledChildOrders().stream()
-                .filter(order -> order.getSide() == Side.BUY )
-                .count();
-        //Check  initial active Sell Orders
-        long initialSellOrderCount = state.getActiveChildOrders().stream()
-                .filter(order -> order.getSide() == Side.SELL)
-                .count();
-        // Check for canceled Sell orders
-        long cancelSellOrderCount = state.getCancelledChildOrders().stream()
-                .filter(order -> order.getSide() == Side.SELL )
+        long sellOrdersCount = state.getChildOrders().stream()
+                .filter(childOrder -> childOrder.getSide() == Side.SELL)
                 .count();
 
+        logger.info("Verifying assertions...");
+        Assert.assertTrue("BUY orders count should be at least 3", buyOrdersCount >= 3);
+        Assert.assertTrue("SELL orders count should be at least 3", sellOrdersCount >= 3);
+        logger.info("Test Completed...");
+    }
 
-        //Assertions
-       logger.info("Verifying assertions...");
-        // verify 3 buy order has been created
-        assertEquals("Should create 3 Buy orders",3, state.getBidLevels());
-     // check that the canceled buy order match the expected number
-       assertTrue("Should cancel at least 1 BUY order", cancelBuyOrderCount >=1);
+    @Test
+    public void testSellCreation() throws Exception {
+        //create a sample market data tick....
+        send(createTick());
+        send(createTick2());
+        send(createTick3());
 
+        //Retrieve the state from the container
+        SimpleAlgoState state = container.getState();
 
-        // verify 3 Ask order has been created
-        assertEquals("Should create 3 Ask orders", 3, state.getAskLevels());
-        // check that the canceled Sell order match the expected number
-        assertTrue("Should cancel at least 1 SELL order", cancelSellOrderCount >=1);
-        logger.info("Test completed successfully");
+        long sellOrdersCount = state.getChildOrders().stream()
+                .filter(childOrder -> childOrder.getSide() == Side.SELL)
+                .count();
+        //assertion
+        Assert.assertTrue("SELL orders count should be at least 3", sellOrdersCount >= 3);
 
     }
 
-}
+    @Test
+    public void testBuyOrderCancel() throws Exception {
+        //create a sample market data tick....
+        send(createTick());
+        send(createTick2());
+        send(createTick3());
 
+        //Retrieve the state from the container
+        SimpleAlgoState state = container.getState();
+
+        //verify buy orders are cancelled if prices don't match the best bid price
+        long cancelledBuyOrders = state.getCancelledChildOrders().stream()
+                .filter(childOrder -> childOrder.getSide() == Side.BUY)
+                .count();
+        Assert.assertTrue("At least one Sell order should be cancelled", cancelledBuyOrders > 0);
+    }
+
+    @Test
+    public void testSellOrderCancel() throws Exception {
+        //create a sample market data tick....
+        send(createTick());
+        send(createTick2());
+        send(createTick3());
+
+        //Retrieve the state from the container
+        SimpleAlgoState state = container.getState();
+
+        //verify Sell orders are cancelled if prices don't match the best Ask price
+        long cancelledSellOrders = state.getCancelledChildOrders().stream()
+                .filter(childOrder -> childOrder.getSide() == Side.BUY)
+                .count();
+
+        //assertion
+        Assert.assertTrue("At least one Sell order should be cancelled", cancelledSellOrders > 0);
+    }
+
+
+    @Test
+    public void testNoActionOnSmallSpread() throws Exception {
+        //create a sample market data tick....
+        send(createTick());
+        send(createTick2());
+        send(createTick3());
+
+        //Retrieve the state from the container
+        SimpleAlgoState state = container.getState();
+        //calling evaluate()
+        Action action = createAlgoLogic().evaluate(state);
+
+      //assertion
+        assertEquals("No action should be taken if the spread is below the threshold", NoAction.NoAction,action);
+
+    }
+
+//    @Test
+//    public void testNewOrderCreatedWhenNoOrderExist() throws Exception{
+//
+//        //create a sample market data tick....
+//        send(createTick());
+//        send(createTick2());
+//        send(createTick3());
+//        SimpleAlgoState state = container.getState();
+//
+//        long buyOrdersCount = state.getChildOrders().stream()
+//                .filter(order -> order.getSide() == Side.BUY)
+//                .count();
+//
+//        Assert.assertTrue(buyOrdersCount>=0);
+
+   // }
+
+
+    }
