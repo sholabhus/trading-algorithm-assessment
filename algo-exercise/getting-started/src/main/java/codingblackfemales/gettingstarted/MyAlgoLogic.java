@@ -46,28 +46,38 @@ public class MyAlgoLogic implements AlgoLogic {
         final long askPrice = askLevel.price;
         final long askQuantity = askLevel.quantity;
         //final long bestAskPrice = state.getAskAt(0).price; will remove
-        final long OrderAskPrice = 75;
+        final long orderAskPrice = 75;
+       final long spreadThreshold =-8; // use spreadthreshold to make decision
 
+        //calculate the spread
+        final long spread = askPrice - bidPrice;
+        //logger.info(String.format(ANSI_GREEN +"[MYALGO] Spread (AsK - Bid): " + spread + ANSI_RESET));
         // logger.info("[MYALGO] Current order size is :" + currentOrderSize );
+
+
+       if(spread < spreadThreshold) {
+            logger.info(String.format(ANSI_GREEN + "MYALGO Spread is too small " +  spread  + " No Action taken"));
+            return  NoAction.NoAction;// Don't place or cancel orders if spread is too small
+        }
 
         // separate child orders into BUY AND SELL
         long buyOrdersCount = state.getChildOrders().stream().filter(ChildOrder -> ChildOrder.getSide() == Side.BUY).count();
         long sellOrdersCount = state.getChildOrders().stream().filter(ChildOrder -> ChildOrder.getSide() == Side.SELL).count();
 
         // create new BUY order if fewer tha 5 BUY order exist
-        if (buyOrdersCount < 5) {
+        if (buyOrdersCount < 3) {
             logger.info(String.format(ANSI_GREEN + "[MYALGO] Have: " + buyOrdersCount + " orders. ADD New BUY ORDER " + bidQuantity + " @ " + bidPrice + ANSI_RESET));
-            //  int initialOrderSize = state.getChildOrders().size();// capture current size of order before creating new one
+            int initialOrderSize = state.getChildOrders().size();// capture current size of order before creating new one
             logger.info(state.getActiveChildOrders().toString());
-            logger.info("Count ORDER -BUY - Number : "  +  state.getChildOrders().size());
+            logger.info("Count BUY ORDERS : "  +  state.getChildOrders().size());
             return new CreateChildOrder(Side.BUY, bidQuantity, bidPrice); // Create a new BUY order
         }
 
         // create new SELL order if fewer tha  5 SELL orders exist
-        if (sellOrdersCount < 5) {//create new sell order if fewer than 5 child order exist
+        if (sellOrdersCount < 3) {//create new sell order if fewer than 5 child order exist
             logger.info(String.format(ANSI_GREEN + "[MYALGO] Have: " + sellOrdersCount + " orders. ADD New ASK ORDER " + askQuantity + " @ " + askPrice + ANSI_RESET));
             int initialOrderSize = state.getChildOrders().size();// capture current size of order before creating new one
-            logger.info("Count ORDER -SELL - Number : "  +  state.getChildOrders().size());
+            logger.info("Count SELL ORDERS : "  +  state.getChildOrders().size());
             return new CreateChildOrder(Side.SELL, askQuantity, askPrice); // Create a new child order
         }
 
@@ -81,21 +91,24 @@ public class MyAlgoLogic implements AlgoLogic {
 
             }
 
-            // Cancel the  First  SELL order with a price less than the BestAsk or not matching the Bestsk.
-
-            if (order.getSide() == Side.SELL && ((order.getPrice() != OrderAskPrice) || (order.getPrice() < OrderAskPrice))) {
-                logger.info(String.format(ANSI_RED + "[MYALGO] Cancel SELL order #%d with price %d and quantity %d. The current best price is %d." + ANSI_RESET, order.getOrderId(), order.getPrice(), order.getQuantity(), OrderAskPrice));
+            // Cancel the  First  SELL order with a price less than the BestAsk or not matching the Bestask.
+            if (order.getSide() == Side.SELL && ((order.getPrice() != orderAskPrice) || (order.getPrice() < orderAskPrice))) {
+                logger.info(String.format(ANSI_RED + "[MYALGO] Cancel SELL order #%d with price %d and quantity %d. The current best price is %d." + ANSI_RESET, order.getOrderId(), order.getPrice(), order.getQuantity(), orderAskPrice));
                 logger.info(state.getActiveChildOrders().toString());
                 return new CancelChildOrder(order);
 
             }
+
         }
         //If no actions are taken, return NoAction
         return NoAction.NoAction;
 
     }
 
-}
+
+   }
+
+
 
 
 
