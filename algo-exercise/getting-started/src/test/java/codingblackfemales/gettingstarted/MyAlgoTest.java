@@ -39,6 +39,7 @@ public class MyAlgoTest extends AbstractAlgoTest {
         send(createTick());
         send(createTick2());
         send(createTick3());
+        send(createTick4());
 
         //Retrieve the state from the container
         SimpleAlgoState state = container.getState();
@@ -62,6 +63,7 @@ public class MyAlgoTest extends AbstractAlgoTest {
         send(createTick());
         send(createTick2());
         send(createTick3());
+        send(createTick4());
 
         //Retrieve the state from the container
         SimpleAlgoState state = container.getState();
@@ -80,6 +82,7 @@ public class MyAlgoTest extends AbstractAlgoTest {
         send(createTick());
         send(createTick2());
         send(createTick3());
+        send(createTick4());
 
         //Retrieve the state from the container
         SimpleAlgoState state = container.getState();
@@ -97,6 +100,7 @@ public class MyAlgoTest extends AbstractAlgoTest {
         send(createTick());
         send(createTick2());
         send(createTick3());
+        send(createTick4());
 
         //Retrieve the state from the container
         SimpleAlgoState state = container.getState();
@@ -117,6 +121,7 @@ public class MyAlgoTest extends AbstractAlgoTest {
         send(createTick());
         send(createTick2());
         send(createTick3());
+        send(createTick4());
 
         //Retrieve the state from the container
         SimpleAlgoState state = container.getState();
