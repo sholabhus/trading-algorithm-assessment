@@ -64,20 +64,20 @@ public class MyAlgoLogic implements AlgoLogic {
         long buyOrdersCount = state.getChildOrders().stream().filter(ChildOrder -> ChildOrder.getSide() == Side.BUY).count();
         long sellOrdersCount = state.getChildOrders().stream().filter(ChildOrder -> ChildOrder.getSide() == Side.SELL).count();
 
-        // create new BUY order if fewer tha 5 BUY order exist
+        // create new BUY order if fewer than 5 BUY order exist
         if (buyOrdersCount < 3) {
             logger.info(String.format(ANSI_GREEN + "[MYALGO] Have: " + buyOrdersCount + " orders. ADD New BUY ORDER " + bidQuantity + " @ " + bidPrice + ANSI_RESET));
             logger.info(state.getActiveChildOrders().toString());
             logger.info("Count BUY ORDERS : "  +  state.getChildOrders().size());
-            return new CreateChildOrder(Side.BUY, bidPrice, bidQuantity); // Create a new BUY order
+            return new CreateChildOrder(Side.BUY,bidQuantity,bidPrice); // Create a new BUY order
         }
 
-        // create new SELL order if fewer tha  5 SELL orders exist
+        // create new SELL order if fewer than  5 SELL orders exist
         if (sellOrdersCount < 3) {//create new sell order if fewer than 5 child order exist
             logger.info(String.format(ANSI_GREEN + "[MYALGO] Have: " + sellOrdersCount + " orders. ADD New ASK ORDER " + askQuantity + " @ " + askPrice + ANSI_RESET));
             //int initialOrderSize = state.getChildOrders().size();// capture current size of order before creating new one
             logger.info("Count SELL ORDERS : "  +  state.getChildOrders().size());
-            return new CreateChildOrder(Side.SELL, askQuantity,askPrice); // Create a new child order
+            return new CreateChildOrder(Side.SELL,askQuantity,askPrice); // Create a new child order
         }
 
         //Cancel the First BUY order with a price less than the BestBid or not matching the Bestbid.

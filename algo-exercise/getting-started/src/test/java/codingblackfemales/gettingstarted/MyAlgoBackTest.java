@@ -36,7 +36,7 @@ public class MyAlgoBackTest extends AbstractAlgoBackTest {
         send(createTick2());
 
        send(createTick3());
-        send(createTick4());
+       send(createTick4());
 
         //then: get the state
         var state = container.getState();
