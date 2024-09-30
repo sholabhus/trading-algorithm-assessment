@@ -1,5 +1,6 @@
 import { useMarketDepthData } from "./useMarketDepthData";
 import { schemas } from "../../data/algo-schemas";
+import {PriceCell} from  "./PriceCell";
 
 /**
  * TODO
@@ -13,9 +14,9 @@ export const MarketDepthFeature = () => {
   }
 
   return (
-    <div>
+    <div style ={{width:'100%', overflowX:'auto' }}>
       <h2>Trading</h2>
-      <table style={{ width: "100%"}}>
+      <table style={{ width: '50%', borderCollapse:'collapse' }}>
         <thead>
           <tr>
           <th colSpan={1}></th>
@@ -39,12 +40,12 @@ export const MarketDepthFeature = () => {
                 {row.bidQuantity} 
               </td>
               <td style={{ fontSize: "12px", textAlign:"center" }}>
-              <span>↑</span> {row.bid}
+              <PriceCell price ={row.bid} />
               </td>
 
               {/* Ask side */}
               <td style={{ fontSize: "12px", textAlign:"center" }}>
-              <span>↑</span> {row.offer}<span>↑</span>
+              <PriceCell price= {row.offer} />
               </td>
               <td style={{ backgroundColor: "#dc3545", color: "white",textAlign:"center" }}>
                 {row.offerQuantity} 
