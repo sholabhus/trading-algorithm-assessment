@@ -47,10 +47,7 @@ public class MyAlgoTest extends AbstractAlgoTest {
         long buyOrdersCount = state.getChildOrders().stream()
                 .filter(childOrder -> childOrder.getSide() == Side.BUY)
                 .count();
-        long sellOrdersCount = state.getChildOrders().stream()
-                .filter(childOrder -> childOrder.getSide() == Side.SELL)
-                .count();
-
+        //assertion
         Assert.assertTrue("BUY orders count should be at least 3", buyOrdersCount >= 3);
 
     }
@@ -107,9 +104,8 @@ public class MyAlgoTest extends AbstractAlgoTest {
         long cancelledSellOrders = state.getCancelledChildOrders().stream()
                 .filter(childOrder -> childOrder.getSide() == Side.SELL)
                 .count();
-
         //assertion
-        Assert.assertTrue("At least one Sell order should be cancelled", cancelledSellOrders > 0);
+       Assert.assertTrue("At least one Sell order should be cancelled", cancelledSellOrders > 0);
     }
 
 
