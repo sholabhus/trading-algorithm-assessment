@@ -93,8 +93,8 @@ public class MyAlgoLogic implements AlgoLogic {
 
             // Cancel the  First  SELL order with a price less than the BestAsk or not matching the Bestsk.
 
-            if (order.getSide() == Side.SELL && ((order.getPrice() != OrderAskPrice) || (order.getPrice() < OrderAskPrice))) {
-                logger.info(String.format(ANSI_RED + "[MYALGO] Cancel SELL order #%d with price %d and quantity %d. The current best price is %d." + ANSI_RESET, order.getOrderId(), order.getPrice(), order.getQuantity(), OrderAskPrice));
+            if (order.getSide() == Side.SELL && ((order.getPrice() != orderAskPrice) || (order.getPrice() < orderAskPrice))) {
+                logger.info(String.format(ANSI_RED + "[MYALGO] Cancel SELL order #%d with price %d and quantity %d. The current best price is %d." + ANSI_RESET, order.getOrderId(), order.getPrice(), order.getQuantity(), orderAskPrice));
                 logger.info(state.getActiveChildOrders().toString());
                 return new CancelChildOrder(order);
 
