@@ -14,7 +14,10 @@ import messages.order.Side;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/*
+/*This Algo is a market making strategy that
+Monitors the bid-ask spread
+Places buy and sell orders to profits from the spread when it's favorable
+Cancel orders that are not aligned with the best market price to ensure it remains competitive and maintains orders to close to the optimal prices
  *
  */
 
