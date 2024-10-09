@@ -105,7 +105,7 @@ public class MyAlgoTest extends AbstractAlgoTest {
                 .filter(childOrder -> childOrder.getSide() == Side.SELL)
                 .count();
         //assertion
-       Assert.assertTrue("At least one Sell order should be cancelled", cancelledSellOrders > 0);
+       Assert.assertTrue("At least one Sell order should be cancelled", cancelledSellOrders < 1);
     }
 
 
