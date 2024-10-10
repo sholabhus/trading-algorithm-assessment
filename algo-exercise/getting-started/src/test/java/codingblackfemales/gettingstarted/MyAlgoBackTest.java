@@ -1,9 +1,12 @@
 package codingblackfemales.gettingstarted;
 
 import codingblackfemales.algo.AlgoLogic;
+import codingblackfemales.sotw.ChildOrder;
+import messages.order.Side;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * This test plugs together all of the infrastructure, including the order book (which you can trade against)
@@ -25,7 +28,7 @@ public class MyAlgoBackTest extends AbstractAlgoBackTest {
     }
 
     @Test
-    public void testExampleBackTest() throws Exception {
+    public void testBackTest() throws Exception {
         //create a sample market data tick....
         send(createTick());
 
@@ -34,18 +37,43 @@ public class MyAlgoBackTest extends AbstractAlgoBackTest {
 
         //when: market data moves towards us
         send(createTick2());
-
-       send(createTick3());
+        send(createTick3());
        send(createTick4());
 
         //then: get the state
         var state = container.getState();
 
 
-        //Check things like filled quantity, cancelled order count etc....
-       //long filledQuantity = state.getChildOrders().stream().map(ChildOrder::getFilledQuantity).reduce(Long::sum).get();
-        //and: check that our algo state was updated to reflect our fills when the market data
-        //assertEquals(225, filledQuantity);
+        //verify create SellOrders
+        long createSellOrders =state.getChildOrders().stream().filter(childOrder -> childOrder.getSide()==Side.SELL).count();
+        assertEquals("At least a SELL Order is created", 5, createSellOrders );
+
+         //Verify create BuyOrders
+        long createBuyOrders =state.getChildOrders().stream().filter(childOrder -> childOrder.getSide()==Side.BUY).count();
+        assertEquals("At least a BUY Order is created", 5, createBuyOrders );
+
+        //Verify at least a SellOrder was cancelled
+        long cancelSellOrder = state.getCancelledChildOrders().stream().filter(childOrder -> childOrder.getSide()== Side.SELL).count();
+        assertEquals("At least one sell order should be cancelled", 5,cancelSellOrder);
+
+        //Verify at least a BuyOrder was cancelled
+        long cancelBuyOrder = state.getCancelledChildOrders().stream().filter(childOrder -> childOrder.getSide()== Side.BUY).count();
+        assertEquals("At least one sell order should be cancelled", 2,cancelBuyOrder);
+
+        //retrieve initial state and check order count
+        long initialOrderCount = state.getChildOrders().size();
+        assertTrue("initial order count should be greater than 0", initialOrderCount >0);
+
+
+
+        //Check  filled quantity
+       long filledQuantity = state.getChildOrders().stream().mapToLong(ChildOrder::getFilledQuantity).reduce(0L,Long::sum);
+       //and: check that our algo state was updated to reflect our fills when the market data
+        assertEquals("check Algo state was updated",3100, filledQuantity);
+
+
+
+
     }
 
 }
