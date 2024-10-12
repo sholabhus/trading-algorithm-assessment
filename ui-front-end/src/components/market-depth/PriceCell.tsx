@@ -1,6 +1,6 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect } from 'react';
 export interface PriceCellProps{
-    prices:number;
+    price:number;
     }
 export const PriceCell =(props: PriceCellProps)=>{
     const lastPriceRef = useRef(props.price);
@@ -11,7 +11,8 @@ export const PriceCell =(props: PriceCellProps)=>{
     // Log the price difference for debugging
             console.log(`Price: ${props.price}, Last Price: ${lastPriceRef.current}, Diff: ${diff}`);
 
-
+//update the reference after the log
+lastPriceRef.current =props.price;
     }, [props.price]); // run when price changes
 
 return (
