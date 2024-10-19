@@ -3,7 +3,7 @@ The Algo trading covers the difference between the bid and ask prices.
 Places buy and sell orders to take advantage of the spread when conditions are favorable.
 Cancels any orders that are not aligned with the best market prices to stay competitive and keep its orders close to optimal prices.
 
-#Algo unitTest covers #
+# Algo unitTest covers #
 1. Verifies that the algorithm creates at least 3 buy orders when conditions are met
 2. Check that at least 3 sell orders are created when conditions are met
 3. Ensure that buy orders are cancelled if they do not meet the best bid price condition
