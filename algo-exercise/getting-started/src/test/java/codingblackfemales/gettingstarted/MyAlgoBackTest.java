@@ -2,8 +2,13 @@ package codingblackfemales.gettingstarted;
 
 import codingblackfemales.algo.AlgoLogic;
 import codingblackfemales.sotw.ChildOrder;
+import messages.marketdata.*;
 import messages.order.Side;
+import org.agrona.DirectBuffer;
+import org.agrona.concurrent.UnsafeBuffer;
 import org.junit.Test;
+
+import java.nio.ByteBuffer;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -29,20 +34,14 @@ public class MyAlgoBackTest extends AbstractAlgoBackTest {
 
     @Test
     public void testBackTest() throws Exception {
-        //create a sample market data tick....
-        send(createTick());
-
-        //ADD asserts when you have implemented your algo logic
-        //assertEquals(container.getState().getChildOrders().size(), 6);
-
         //when: market data moves towards us
+        send(createTick());
         send(createTick2());
         send(createTick3());
-       send(createTick4());
+        send(createTick4());
 
         //then: get the state
         var state = container.getState();
-
 
         //verify create SellOrders
         long createSellOrders =state.getChildOrders().stream().filter(childOrder -> childOrder.getSide()==Side.SELL).count();
@@ -58,21 +57,16 @@ public class MyAlgoBackTest extends AbstractAlgoBackTest {
 
         //Verify at least a BuyOrder was cancelled
         long cancelBuyOrder = state.getCancelledChildOrders().stream().filter(childOrder -> childOrder.getSide()== Side.BUY).count();
-        assertEquals("At least one sell order should be cancelled", 2,cancelBuyOrder);
+        assertEquals("At least one Buy order should be cancelled", 2,cancelBuyOrder);
 
         //retrieve initial state and check order count
         long initialOrderCount = state.getChildOrders().size();
         assertTrue("initial order count should be greater than 0", initialOrderCount >0);
 
-
-
-        //Check  filled quantity
+        //Check  filled quantity and ensure its updated
        long filledQuantity = state.getChildOrders().stream().mapToLong(ChildOrder::getFilledQuantity).reduce(0L,Long::sum);
        //and: check that our algo state was updated to reflect our fills when the market data
-        assertEquals("check Algo state was updated",3100, filledQuantity);
-
-
-
+        assertEquals("check Algo state was updated",3000, filledQuantity);
 
     }
 

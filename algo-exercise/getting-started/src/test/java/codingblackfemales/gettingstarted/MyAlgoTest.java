@@ -40,6 +40,7 @@ public class MyAlgoTest extends AbstractAlgoTest {
         send(createTick2());
         send(createTick3());
         send(createTick4());
+       // send(createTick5());
 
         //Retrieve the state from the container
         SimpleAlgoState state = container.getState();
@@ -59,6 +60,7 @@ public class MyAlgoTest extends AbstractAlgoTest {
         send(createTick2());
         send(createTick3());
         send(createTick4());
+       // send(createTick5());
 
         //Retrieve the state from the container
         SimpleAlgoState state = container.getState();
@@ -78,6 +80,7 @@ public class MyAlgoTest extends AbstractAlgoTest {
         send(createTick2());
         send(createTick3());
         send(createTick4());
+
 
         //Retrieve the state from the container
         SimpleAlgoState state = container.getState();
@@ -105,7 +108,7 @@ public class MyAlgoTest extends AbstractAlgoTest {
                 .filter(childOrder -> childOrder.getSide() == Side.SELL)
                 .count();
         //assertion
-       Assert.assertTrue("At least one Sell order should be cancelled", cancelledSellOrders < 1);
+       Assert.assertTrue("At least one Sell order should be cancelled", cancelledSellOrders > 1);
     }
 
 
