@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 export interface PriceCellProps{
-    price:number;
+    price:number;gi
     }
 export const PriceCell =(props: PriceCellProps)=>{
     const lastPriceRef = useRef(props.price);
@@ -31,6 +31,8 @@ return (
                     ↓ {/* Down arrow */}
                 </span>
             ) : null}
-        </div>
+            
+            </div>
+        
     );
 };
