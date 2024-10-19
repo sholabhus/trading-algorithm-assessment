@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 export interface PriceCellProps{
-    price:number;gi
+    price:number;
     }
 export const PriceCell =(props: PriceCellProps)=>{
     const lastPriceRef = useRef(props.price);
