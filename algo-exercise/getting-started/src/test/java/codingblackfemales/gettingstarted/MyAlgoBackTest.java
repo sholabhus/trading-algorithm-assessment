@@ -66,7 +66,7 @@ public class MyAlgoBackTest extends AbstractAlgoBackTest {
         //Check  filled quantity and ensure its updated
        long filledQuantity = state.getChildOrders().stream().mapToLong(ChildOrder::getFilledQuantity).reduce(0L,Long::sum);
        //and: check that our algo state was updated to reflect our fills when the market data
-        assertEquals("check Algo state was updated",3000, filledQuantity);
+        assertEquals("check Algo state was updated",3100, filledQuantity);
 
     }
 
