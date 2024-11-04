@@ -1,7 +1,8 @@
 # Algo Trading Assessment -logic  #
-The Algo trading covers the difference between the bid and ask prices.
+The algorithm monitors the spread between bid and ask prices.
 Places buy and sell orders to take advantage of the spread when conditions are favorable.
 Cancels any orders that are not aligned with the best market prices to stay competitive and keep its orders close to optimal prices.
+
 
 # Algo unitTest covers #
 1. Verifies that the algorithm creates at least 3 buy orders when conditions are met
