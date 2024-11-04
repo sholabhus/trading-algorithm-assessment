@@ -30,6 +30,11 @@ public class MyAlgoLogic implements AlgoLogic {
     private static final String ANSI_RESET = "\033[0m";  // Reset to default color
     private static final String ANSI_BLUE = "\u001B[34m";
 
+    private static final int MAX_TOTAL_ORDER_COUNT = 10;
+    private static final int MAX_BUY_ORDER_COUNT = 5;
+    private static final int MAX_SELL_ORDER_COUNT = 5;
+    private static final long ASK_PRICE_THRESHOLD = 110;
+    private static final long SPREAD_THRESHOLD = -8; // use spread threshold to make decision
 
     @Override
     public Action evaluate(SimpleAlgoState state) {
@@ -42,7 +47,7 @@ public class MyAlgoLogic implements AlgoLogic {
         var totalOrderCount = state.getChildOrders().size();
 
         // make sure we have an exit condition...
-        if (totalOrderCount > 10) {
+        if (totalOrderCount > MAX_TOTAL_ORDER_COUNT) {
             return NoAction.NoAction;
         }
 
@@ -53,15 +58,13 @@ public class MyAlgoLogic implements AlgoLogic {
         final AskLevel askLevel = state.getAskAt(0);
         final long bestAskPrice = askLevel.price;
         final long askQuantity = askLevel.quantity;
-        final long askPriceThreshold = 110;
-        final long spreadThreshold = -8; // use spreadthreshold to make decision
 
         // calculate the spread
         final long spread = bestAskPrice - bestBidPrice;
         logger.info(String.format(ANSI_GREEN + "[MYALGO] Bid–Ask Spread: " + spread + ANSI_RESET));
 
         // Don't place or cancel orders if spread is too small
-        if (spread < spreadThreshold) {
+        if (spread < SPREAD_THRESHOLD) {
             logger.info(String.format(ANSI_GREEN + "[MYALGO] Bid–Ask Spread is too small." + spread + " No Action taken"));
             return NoAction.NoAction;
         }
@@ -71,17 +74,17 @@ public class MyAlgoLogic implements AlgoLogic {
         long sellOrdersCount = state.getChildOrders().stream().filter(ChildOrder -> ChildOrder.getSide() == Side.SELL).count();
 
         // create new BUY order if fewer than 5 BUY orders exist
-        if (buyOrdersCount < 5) {
+        if (buyOrdersCount < MAX_BUY_ORDER_COUNT) {
             return createBuyOrder(state, buyOrdersCount, bidQuantity, bestBidPrice);
         }
 
         // create new SELL order if fewer than  5 SELL orders exist
-        if (sellOrdersCount < 5) {
+        if (sellOrdersCount < MAX_SELL_ORDER_COUNT) {
             return createSellOrder(state, sellOrdersCount, askQuantity, bestAskPrice);
         }
 
        // cancel orders that don't match the best price
-        return cancelOrders(state, bestBidPrice,bestAskPrice, askPriceThreshold);
+        return cancelOrders(state, bestBidPrice, ASK_PRICE_THRESHOLD);
     }
 
     public Action createBuyOrder (SimpleAlgoState state, long buyOrdersCount, long bidQuantity, long bestBidPrice){
@@ -101,7 +104,7 @@ public class MyAlgoLogic implements AlgoLogic {
         return new CreateChildOrder(Side.SELL, askQuantity, bestAskPrice); // Create a new child order
     }
 
-    public Action cancelOrders(SimpleAlgoState state,long bestBidPrice, long bestAskPrice, long askPriceThreshold){
+    public Action cancelOrders(SimpleAlgoState state,long bestBidPrice, long askPriceThreshold){
         //Cancel the First BUY order with a price less than the BestBid or not matching the Bestbid.
 
         for (ChildOrder order : state.getActiveChildOrders()) {
