@@ -53,16 +53,16 @@ public class MyAlgoLogic implements AlgoLogic {
         final AskLevel askLevel = state.getAskAt(0);
         final long bestAskPrice = askLevel.price;
         final long askQuantity = askLevel.quantity;
-        final long askPriceThreshold = 70;
+        final long askPriceThreshold = 110;
         final long spreadThreshold = -8; // use spreadthreshold to make decision
 
         // calculate the spread
         final long spread = bestAskPrice - bestBidPrice;
-        logger.info(String.format(ANSI_GREEN + "[MYALGO] Spread (AsK - Bid): " + spread + ANSI_RESET));
+        logger.info(String.format(ANSI_GREEN + "[MYALGO] Bid–Ask Spread: " + spread + ANSI_RESET));
 
         // Don't place or cancel orders if spread is too small
         if (spread < spreadThreshold) {
-            logger.info(String.format(ANSI_GREEN + "MYALGO Spread is too small " + spread + " No Action taken"));
+            logger.info(String.format(ANSI_GREEN + "[MYALGO] Bid–Ask Spread is too small." + spread + " No Action taken"));
             return NoAction.NoAction;
         }
 
@@ -85,20 +85,19 @@ public class MyAlgoLogic implements AlgoLogic {
     }
 
     public Action createBuyOrder (SimpleAlgoState state, long buyOrdersCount, long bidQuantity, long bestBidPrice){
-
+        logger.info("BUY ORDER COUNT: "  + buyOrdersCount );
         // ALL IN NEW METHOD CALLED createBuyOrder
         logger.info(String.format(ANSI_GREEN + "[MYALGO] Have " + state.getChildOrders().size() + " orders. ADD NEW BUY ORDER " + bidQuantity + " @ " + bestBidPrice + ANSI_RESET));
         // int initialOrderSize = state.getChildOrders().size();// capture current size of order before creating new one
         logger.info(state.getActiveChildOrders().toString());
-        logger.info("BUY ORDER COUNT: "  + buyOrdersCount );
         return new CreateChildOrder(Side.BUY, bidQuantity, bestBidPrice); // Create a new BUY order
     }
 
     public Action createSellOrder (SimpleAlgoState state, long sellOrdersCount, long askQuantity, long bestAskPrice){
-        // ALL IN NEW METHOD CALLED createBuyOrder
-        logger.info(String.format(ANSI_GREEN + "[MYALGO] Have " + state.getChildOrders().size() + " orders. ADD NEW ASK ORDER " + askQuantity + " @ " + bestAskPrice + ANSI_RESET));
-        //int initialOrderSize = state.getChildOrders().size();// capture current size of order before creating new one
         logger.info("SELL ORDER COUNT: "  + sellOrdersCount);
+        // ALL IN NEW METHOD CALLED createBuyOrder
+        logger.info(String.format(ANSI_GREEN + "[MYALGO] Have " + state.getChildOrders().size() + " orders. ADD NEW SELL ORDER " + askQuantity + " @ " + bestAskPrice + ANSI_RESET));
+        //int initialOrderSize = state.getChildOrders().size();// capture current size of order before creating new one
         return new CreateChildOrder(Side.SELL, askQuantity, bestAskPrice); // Create a new child order
     }
 
@@ -115,20 +114,19 @@ public class MyAlgoLogic implements AlgoLogic {
             // if the order's price is not matching or is less than the BestBid, cancel it
 
             if (orderIsBuy && (orderNotBestBidPrice || orderLessThanBestBid)) {
-                logger.info(String.format(ANSI_RED + "[MYALGO] Cancel BUY order #%d with price %d and quantity %d. The current best price is %d." + ANSI_RESET, order.getOrderId(), order.getPrice(), order.getQuantity(), bestBidPrice));
+                logger.info(String.format(ANSI_RED + "[MYALGO] Cancelling BUY order #%d with price %d and quantity %d. The current best price is %d." + ANSI_RESET, order.getOrderId(), order.getPrice(), order.getQuantity(), bestBidPrice));
                 logger.info(state.getActiveChildOrders().toString());
                 return new CancelChildOrder(order);
 
             }
              //handle sell orders
             boolean orderIsSell = order.getSide() == Side.SELL;
-            boolean orderNotThreshold = order.getPrice() != askPriceThreshold;
-            boolean orderLessThanThreshold = order.getPrice() < askPriceThreshold;
+            boolean orderLessThanThreshold = order.getPrice() <= askPriceThreshold;
 
-            // If the order's price is not matching the threshold or exceeds BestAsk, cancel it
-            if (orderIsSell && ((orderNotThreshold) || (orderLessThanThreshold))) {
+            // If the order's price is not matching the threshold or is less than BestAsk, cancel it
+            if (orderIsSell && orderLessThanThreshold) {
                 logger.info(String.format(ANSI_RED + " The Threshold is %d." + ANSI_RESET,  askPriceThreshold));
-                logger.info(String.format(ANSI_RED + "[MYALGO] Cancel SELL order #%d with price %d and quantity %d. The current best price is %d." + ANSI_RESET, order.getOrderId(), order.getPrice(), order.getQuantity(), bestAskPrice));
+                logger.info(String.format(ANSI_RED + "[MYALGO] Cancelling SELL order #%d with price %d and quantity %d." + ANSI_RESET, order.getOrderId(), order.getPrice(), order.getQuantity()));
                 logger.info(state.getActiveChildOrders().toString());
                 return new CancelChildOrder(order);
 

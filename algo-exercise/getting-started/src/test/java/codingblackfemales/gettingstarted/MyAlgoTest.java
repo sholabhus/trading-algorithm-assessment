@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+
 
 
 /**
@@ -25,7 +25,6 @@ import static org.junit.Assert.assertTrue;
  *
  */
 public class MyAlgoTest extends AbstractAlgoTest {
-    private static final Logger logger = LoggerFactory.getLogger(MyAlgoTest.class.getName());
 
     @Override
     public AlgoLogic createAlgoLogic() {
@@ -108,7 +107,7 @@ public class MyAlgoTest extends AbstractAlgoTest {
                 .filter(childOrder -> childOrder.getSide() == Side.SELL)
                 .count();
         //assertion
-       Assert.assertTrue("At least one Sell order should be cancelled", cancelledSellOrders > 1);
+       Assert.assertTrue("At least one Sell order should be cancelled", cancelledSellOrders > 0);
     }
 
 

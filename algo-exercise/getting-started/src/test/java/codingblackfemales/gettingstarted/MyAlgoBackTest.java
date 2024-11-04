@@ -61,7 +61,7 @@ public class MyAlgoBackTest extends AbstractAlgoBackTest {
 
         //retrieve initial state and check order count
         long initialOrderCount = state.getChildOrders().size();
-        assertTrue("initial order count should be greater than 0", initialOrderCount >0);
+        assertTrue("initial order count should be greater than 0", initialOrderCount > 0);
 
         //Check  filled quantity and ensure its updated
        long filledQuantity = state.getChildOrders().stream().mapToLong(ChildOrder::getFilledQuantity).reduce(0L,Long::sum);
